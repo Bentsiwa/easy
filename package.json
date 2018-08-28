@@ -7,6 +7,7 @@
     "datatables.net": "^1.10.19",
     "express": "^4.16.2",
     "jquery": "^3.3.1",
+    "lodash": "^4.17.10",
     "yarn": "^1.9.4"
   },
   "scripts": {
