@@ -1,3 +1,6 @@
+
+import '../vendor/datatables-plugins/dataTables.bootstrap.css';
+
 import React, { Component } from 'react';
 import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 
@@ -6,6 +9,8 @@ import '../vendor/metisMenu/metisMenu.min.css';
 import '../dist/css/sb-admin-2.css';
 import '../vendor/morrisjs/morris.css';
 import '../vendor/font-awesome/css/font-awesome.min.css';
+const $ =require('jquery');
+$.DataTable=require('datatables.net');
 
 
 // class Users extends React.Component {
@@ -19,7 +24,7 @@ import '../vendor/font-awesome/css/font-awesome.min.css';
 // }
 
 // componentDidMount() {
-  
+
 //   fetch('/api/getUsers')
 //     .then(res => res.json())
 //     .then(
@@ -76,7 +81,7 @@ class Users extends Component {
 }
 
 componentDidMount() {
-  
+
   fetch('/api/getUsers')
     .then(res => res.json())
     .then(
@@ -97,8 +102,17 @@ componentDidMount() {
 
       }
     )
+
+
 }
 
+componentDidUpdate(prevProps, prevState) {
+
+  console.log(this.el);
+  this.$el=$(this.el);
+
+  this.$el.DataTable()
+}
 
   render() {
 
@@ -107,41 +121,52 @@ componentDidMount() {
     const userList = usersData.filter((user) => user.id < 10)
 
     return (
-      <div className="animated fadeIn">
-        <Row>
-          <Col xl={6}>
-            <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify"></i> Users <small className="text-muted">example</small>
-              </CardHeader>
-              <CardBody>
-                <Table responsive hover>
-                  <thead>
-                    <tr>
-                      <th scope="col">id</th>
-                      <th scope="col">name</th>
-                      <th scope="col">registered</th>
-                      <th scope="col">role</th>
-                      <th scope="col">status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userList.map((user, index) =>
-                      <UserRow key={index} user={user}/>
-                    )}
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+      <div id="page-wrapper">
+        <div className="animated fadeIn">
+          <Row>
+            <Col xl={6}>
+              <Card>
+              <div className="row">
+                  <div className="col-lg-12">
+                      <h1 className="page-header">Users</h1>
+                  </div>
+
+              </div>
+
+                  <table width="100%" className="table table-striped table-bordered table-hover" id="dataTables-example" ref={el=>this.el=el}>
+                    <thead>
+                      <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Registered</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userList.map((user, index) =>
+                        <UserRow key={index} user={user}/>
+                      )}
+                    </tbody>
+                  </table>
+
+              </Card>
+            </Col>
+          </Row>
+        </div>
       </div>
+
+
     )
   }
+  // console.log(this.el);
+  // this.$el=$(this.el);
+  //
+  // this.$el.DataTable()
 
 // render() {
 //   console.log(this.state);
-  
+
 //   const { error, isLoaded, items } = this.state;
 //   console.log(items);
 //   if (error) {

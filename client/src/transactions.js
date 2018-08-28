@@ -1,25 +1,98 @@
 
+import './vendor/datatables-plugins/dataTables.bootstrap.css';
+
 import React, { Component } from 'react';
+import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
 
 import './vendor/bootstrap/css/bootstrap.min.css';
 import './vendor/metisMenu/metisMenu.min.css';
 import './dist/css/sb-admin-2.css';
 import './vendor/morrisjs/morris.css';
 import './vendor/font-awesome/css/font-awesome.min.css';
+const $ =require('jquery');
+$.DataTable=require('datatables.net');
 
 
-import './vendor/datatables-responsive/dataTables.responsive.css';
-import './vendor/font-awesome/css/font-awesome.min.css';
 
+function UserRow(props) {
+  const user = props.user
+  const userLink = `#/users/${user.id}`
+
+  const getBadge = (status) => {
+    return status === 'Active' ? 'success' :
+      status === 'Inactive' ? 'secondary' :
+        status === 'Pending' ? 'warning' :
+          status === 'Banned' ? 'danger' :
+            'primary'
+  }
+
+  return (
+    <tr key={user.id.toString()}>
+        <th scope="row"><a href={userLink}>{user.id}</a></th>
+        <td><a href={userLink}>{user.name}</a></td>
+        <td>{user.registered}</td>
+        <td>{user.role}</td>
+        <td><Badge href={userLink} color={getBadge(user.status)}>{user.status}</Badge></td>
+    </tr>
+  )
+}
 
 class Transactions extends Component {
+  constructor(props) {
+  super(props);
+  this.state = {
+    error: null,
+    isLoaded: false,
+    items: []
+  };
+}
+
+componentDidMount() {
+
+  fetch('/api/getTransactions')
+    .then(res => res.json())
+    .then(
+      (result) => {
+        this.setState({
+          isLoaded: true,
+          items: result.users
+        });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        this.setState({
+          isLoaded: true,
+          error
+        });
+
+      }
+    )
+
+
+}
+
+componentDidUpdate(prevProps, prevState) {
+
+  console.log(this.el);
+  this.$el=$(this.el);
+
+  this.$el.DataTable()
+}
+
   render() {
 
+    var usersData = this.state.items
+
+    const userList = usersData.filter((user) => user.id < 10)
+
     return (
-        <div data-id="wrapper">
-
-
-          <div id="page-wrapper">
+      <div id="page-wrapper">
+        <div className="animated fadeIn">
+          <Row>
+            <Col xl={6}>
+              <Card>
               <div className="row">
                   <div className="col-lg-12">
                       <h1 className="page-header">Transactions</h1>
@@ -27,444 +100,33 @@ class Transactions extends Component {
 
               </div>
 
-              <div className="row">
-                  <div className="col-lg-12">
-                      <div className="panel panel-default">
-                          <div className="panel-heading">
-                              DataTables Advanced Tables
-                          </div>
+                  <table width="100%" className="table table-striped table-bordered table-hover" id="dataTables-example" ref={el=>this.el=el}>
+                    <thead>
+                      <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Registered</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userList.map((user, index) =>
+                        <UserRow key={index} user={user}/>
+                      )}
+                    </tbody>
+                  </table>
 
-                          <div className="panel-body">
-                              <table data-width="100%" className="table table-striped table-bordered table-hover" data-id="dataTables-example">
-                                  <thead>
-                                      <tr>
-                                          <th>Rendering engine</th>
-                                          <th>Browser</th>
-                                          <th>Platform(s)</th>
-                                          <th>Engine version</th>
-                                          <th>CSS grade</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <tr className="odd gradeX">
-                                          <td>Trident</td>
-                                          <td>Internet Explorer 4.0</td>
-                                          <td>Win 95+</td>
-                                          <td className="center">4</td>
-                                          <td className="center">X</td>
-                                      </tr>
-                                      <tr className="even gradeC">
-                                          <td>Trident</td>
-                                          <td>Internet Explorer 5.0</td>
-                                          <td>Win 95+</td>
-                                          <td className="center">5</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="odd gradeA">
-                                          <td>Trident</td>
-                                          <td>Internet Explorer 5.5</td>
-                                          <td>Win 95+</td>
-                                          <td className="center">5.5</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="even gradeA">
-                                          <td>Trident</td>
-                                          <td>Internet Explorer 6</td>
-                                          <td>Win 98+</td>
-                                          <td className="center">6</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="odd gradeA">
-                                          <td>Trident</td>
-                                          <td>Internet Explorer 7</td>
-                                          <td>Win XP SP2+</td>
-                                          <td className="center">7</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="even gradeA">
-                                          <td>Trident</td>
-                                          <td>AOL browser (AOL desktop)</td>
-                                          <td>Win XP</td>
-                                          <td className="center">6</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Firefox 1.0</td>
-                                          <td>Win 98+ / OSX.2+</td>
-                                          <td className="center">1.7</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Firefox 1.5</td>
-                                          <td>Win 98+ / OSX.2+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Firefox 2.0</td>
-                                          <td>Win 98+ / OSX.2+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Firefox 3.0</td>
-                                          <td>Win 2k+ / OSX.3+</td>
-                                          <td className="center">1.9</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Camino 1.0</td>
-                                          <td>OSX.2+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Camino 1.5</td>
-                                          <td>OSX.3+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Netscape 7.2</td>
-                                          <td>Win 95+ / Mac OS 8.6-9.2</td>
-                                          <td className="center">1.7</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Netscape Browser 8</td>
-                                          <td>Win 98SE+</td>
-                                          <td className="center">1.7</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Netscape Navigator 9</td>
-                                          <td>Win 98+ / OSX.2+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.0</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.1</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1.1</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.2</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1.2</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.3</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1.3</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.4</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1.4</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.5</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1.5</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.6</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">1.6</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.7</td>
-                                          <td>Win 98+ / OSX.1+</td>
-                                          <td className="center">1.7</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Mozilla 1.8</td>
-                                          <td>Win 98+ / OSX.1+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Seamonkey 1.1</td>
-                                          <td>Win 98+ / OSX.2+</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Gecko</td>
-                                          <td>Epiphany 2.20</td>
-                                          <td>Gnome</td>
-                                          <td className="center">1.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>Safari 1.2</td>
-                                          <td>OSX.3</td>
-                                          <td className="center">125.5</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>Safari 1.3</td>
-                                          <td>OSX.3</td>
-                                          <td className="center">312.8</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>Safari 2.0</td>
-                                          <td>OSX.4+</td>
-                                          <td className="center">419.3</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>Safari 3.0</td>
-                                          <td>OSX.4+</td>
-                                          <td className="center">522.1</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>OmniWeb 5.5</td>
-                                          <td>OSX.4+</td>
-                                          <td className="center">420</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>iPod Touch / iPhone</td>
-                                          <td>iPod</td>
-                                          <td className="center">420.1</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Webkit</td>
-                                          <td>S60</td>
-                                          <td>S60</td>
-                                          <td className="center">413</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 7.0</td>
-                                          <td>Win 95+ / OSX.1+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 7.5</td>
-                                          <td>Win 95+ / OSX.2+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 8.0</td>
-                                          <td>Win 95+ / OSX.2+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 8.5</td>
-                                          <td>Win 95+ / OSX.2+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 9.0</td>
-                                          <td>Win 95+ / OSX.3+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 9.2</td>
-                                          <td>Win 88+ / OSX.3+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera 9.5</td>
-                                          <td>Win 88+ / OSX.3+</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Opera for Wii</td>
-                                          <td>Wii</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Nokia N800</td>
-                                          <td>N800</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Presto</td>
-                                          <td>Nintendo DS browser</td>
-                                          <td>Nintendo DS</td>
-                                          <td className="center">8.5</td>
-                                          <td className="center">C/A<sup>1</sup>
-                                          </td>
-                                      </tr>
-                                      <tr className="gradeC">
-                                          <td>KHTML</td>
-                                          <td>Konqureror 3.1</td>
-                                          <td>KDE 3.1</td>
-                                          <td className="center">3.1</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>KHTML</td>
-                                          <td>Konqureror 3.3</td>
-                                          <td>KDE 3.3</td>
-                                          <td className="center">3.3</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>KHTML</td>
-                                          <td>Konqureror 3.5</td>
-                                          <td>KDE 3.5</td>
-                                          <td className="center">3.5</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeX">
-                                          <td>Tasman</td>
-                                          <td>Internet Explorer 4.5</td>
-                                          <td>Mac OS 8-9</td>
-                                          <td className="center">-</td>
-                                          <td className="center">X</td>
-                                      </tr>
-                                      <tr className="gradeC">
-                                          <td>Tasman</td>
-                                          <td>Internet Explorer 5.1</td>
-                                          <td>Mac OS 7.6-9</td>
-                                          <td className="center">1</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="gradeC">
-                                          <td>Tasman</td>
-                                          <td>Internet Explorer 5.2</td>
-                                          <td>Mac OS 8-X</td>
-                                          <td className="center">1</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Misc</td>
-                                          <td>NetFront 3.1</td>
-                                          <td>Embedded devices</td>
-                                          <td className="center">-</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="gradeA">
-                                          <td>Misc</td>
-                                          <td>NetFront 3.4</td>
-                                          <td>Embedded devices</td>
-                                          <td className="center">-</td>
-                                          <td className="center">A</td>
-                                      </tr>
-                                      <tr className="gradeX">
-                                          <td>Misc</td>
-                                          <td>Dillo 0.8</td>
-                                          <td>Embedded devices</td>
-                                          <td className="center">-</td>
-                                          <td className="center">X</td>
-                                      </tr>
-                                      <tr className="gradeX">
-                                          <td>Misc</td>
-                                          <td>Links</td>
-                                          <td>Text only</td>
-                                          <td className="center">-</td>
-                                          <td className="center">X</td>
-                                      </tr>
-                                      <tr className="gradeX">
-                                          <td>Misc</td>
-                                          <td>Lynx</td>
-                                          <td>Text only</td>
-                                          <td className="center">-</td>
-                                          <td className="center">X</td>
-                                      </tr>
-                                      <tr className="gradeC">
-                                          <td>Misc</td>
-                                          <td>IE Mobile</td>
-                                          <td>Windows Mobile 6</td>
-                                          <td className="center">-</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="gradeC">
-                                          <td>Misc</td>
-                                          <td>PSP browser</td>
-                                          <td>PSP</td>
-                                          <td className="center">-</td>
-                                          <td className="center">C</td>
-                                      </tr>
-                                      <tr className="gradeU">
-                                          <td>Other browsers</td>
-                                          <td>All others</td>
-                                          <td>-</td>
-                                          <td className="center">-</td>
-                                          <td className="center">U</td>
-                                      </tr>
-                                  </tbody>
-                              </table>
-
-
-                          </div>
-
-                      </div>
-
-                  </div>
-
-              </div>
-          </div>
-
+              </Card>
+            </Col>
+          </Row>
+        </div>
       </div>
-    );
+
+
+    )
   }
+
 }
-
-
-
 
 export default Transactions;

@@ -12,7 +12,8 @@ class DashboardCards extends Component {
 
     return (
       <div >
-        <div data-id="page-wrapper">
+      <div id="page-wrapper">
+    
               <div className="row">
                   <div className="col-lg-12">
                       <h1 className="page-header">Dashboard</h1>
