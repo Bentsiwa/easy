@@ -18,9 +18,9 @@ class User extends Component {
           items: []
         };
       }
-      
+
       componentDidMount() {
-      
+
         fetch('/api/getUsers')
           .then(res => res.json())
           .then(
@@ -38,13 +38,13 @@ class User extends Component {
                 isLoaded: true,
                 error
               });
-      
+
             }
           )
-      
-      
+
+
       }
-      
+
 
   render() {
       var usersData = this.state.items
@@ -54,6 +54,7 @@ class User extends Component {
     const userDetails = user ? Object.entries(user) : [['id', (<span><i className="text-muted icon-ban"></i> Not found</span>)]]
 
     return (
+      <div id="page-wrapper">
       <div className="animated fadeIn">
         <Row>
           <Col lg={6}>
@@ -80,6 +81,7 @@ class User extends Component {
             </Card>
           </Col>
         </Row>
+      </div>
       </div>
     )
   }
