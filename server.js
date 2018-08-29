@@ -2,6 +2,25 @@ const express = require('express');
 
 const app = express();
 const port = process.env.PORT || 5000;
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'me',
+  password : 'secret',
+  database : 'my_db'
+});
+
+app.get('/posts', function (req, res) {
+  connection.connect();
+
+  connection.query('SELECT * FROM posts LIMIT 0, 10', function (error, results, fields) {
+    if (error) throw error;
+    res.send(results)
+  });
+
+  connection.end();
+});
 
 app.get('/api/getTransactions', (req, res) => {
   res.send( {users: [

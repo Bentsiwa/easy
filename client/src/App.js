@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import DashboardCards from './dashboardcards';
 import Transactions from './transactions';
 import Users from './users/users'
+import User from './users/user'
 
 import './vendor/bootstrap/css/bootstrap.min.css';
 import './vendor/metisMenu/metisMenu.min.css';
@@ -60,6 +61,7 @@ class App extends Component {
                           <Route exact path='/' component={DashboardCards} />
                           <Route exact path='/Transactions' component={Transactions} />
                           <Route exact path='/users' component={Users} />
+                          <Route exact path='/users/:id' component={User}/>
         </Switch>
 
       </div>

@@ -7,7 +7,8 @@ import { Route, IndexRoute } from 'react-router';
  import App from './App';
  import DashboardCards from './dashboardcards';
  import Transactions from './transactions';
- import Users from '../users/user';
+ import Users from './users/users';
+ import User from './users/user'
 
 /**
  * All routes go here.
@@ -19,6 +20,7 @@ export default (
     <Route path="/dashboard" component={DashboardCards} />
     <Route path="/transactions" component={Transactions} />
     <Route path="/users" component={Users} />
+    <Route path="/users/:id" component={User}/>
 
   </Route>
 );
